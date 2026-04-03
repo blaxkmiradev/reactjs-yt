@@ -12,7 +12,7 @@ app.get("/download", async (req, res) => {
     const url = req.query.url as string;
 
     if (!url || !ytdl.validateURL(url)) {
-      return res.status(400).send("Invalid YouTube URL");
+      return res.status(400).send("Invalid URL");
     }
 
     const info = await ytdl.getInfo(url);
@@ -20,10 +20,17 @@ app.get("/download", async (req, res) => {
 
     res.header("Content-Disposition", `attachment; filename="${title}.mp4"`);
 
-    ytdl(url, { quality: "highestvideo" }).pipe(res);
-  } catch (error) {
-    res.status(500).send("Error downloading video");
+    ytdl(url, {
+      quality: "highestvideo"
+    }).pipe(res);
+
+  } catch (err) {
+    res.status(500).send("Download error");
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running http://localhost:${PORT}`);
 });
 
 app.listen(PORT, () => {
